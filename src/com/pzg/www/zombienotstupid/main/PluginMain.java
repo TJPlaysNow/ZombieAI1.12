@@ -32,24 +32,27 @@ public class PluginMain extends JavaPlugin implements Listener {
 	
 	protected PluginDescriptionFile pdfFile = getDescription();
 	
-	private List<CustomZombie> zombies = new ArrayList<CustomZombie>();
+	private List<CustomZombie> zombies;
 	
 	@Override
 	public void onEnable() {
 		Bukkit.getPluginManager().registerEvents(this, this);
 		plugin = this;
+		zombies = new ArrayList<CustomZombie>();
 		
 		CustomEntities.registerEntities();
 		
-		new BukkitRunnable() {
+		BukkitRunnable loop = new BukkitRunnable() {
 			public void run() {
 				Bukkit.getLogger().info("loops");
+				Bukkit.getLogger().info(zombies + "");
 				for (CustomZombie zombie : zombies) {
 					Bukkit.getLogger().info("updating zombie walk");
 					zombie.setTarget(getClosestPlayer((LivingEntity) zombie));
 				}
 			}
-		}.runTaskTimerAsynchronously(this, 100, 100);
+		};
+		loop.runTaskTimerAsynchronously(this, 100, 100);
 	}
 	
 	@Override
