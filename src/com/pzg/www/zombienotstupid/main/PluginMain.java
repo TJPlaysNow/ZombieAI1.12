@@ -1,13 +1,16 @@
 package com.pzg.www.zombienotstupid.main;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftZombie;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
@@ -29,10 +32,24 @@ public class PluginMain extends JavaPlugin implements Listener {
 	
 	protected PluginDescriptionFile pdfFile = getDescription();
 	
+	private List<CustomZombie> zombies = new ArrayList<CustomZombie>();
+	
 	@Override
 	public void onEnable() {
 		Bukkit.getPluginManager().registerEvents(this, this);
+		plugin = this;
+		
 		CustomEntities.registerEntities();
+		
+		new BukkitRunnable() {
+			public void run() {
+				Bukkit.getLogger().info("loops");
+				for (CustomZombie zombie : zombies) {
+					Bukkit.getLogger().info("updating zombie walk");
+					zombie.setTarget(getClosestPlayer((LivingEntity) zombie));
+				}
+			}
+		}.runTaskTimerAsynchronously(this, 100, 100);
 	}
 	
 	@Override
@@ -45,32 +62,19 @@ public class PluginMain extends JavaPlugin implements Listener {
 		Bukkit.getLogger().info("Entity spawned");
 		
 		if (e.getEntityType().equals(EntityType.ZOMBIE)) {
+			EntityZombie zom = ((CraftZombie)e.getEntity()).getHandle();
+			if (zom instanceof CustomZombie) {
+				return;
+			}
+			
 			Bukkit.getLogger().info("Replacing vanilla zombie with special zombie.");
 			e.getEntity().remove();
 			
-			final CustomZombie zombie = new CustomZombie(((CraftWorld) ((World) e.getLocation().getWorld())).getHandle(), 1.2);
-			CustomEntities.spawnEntity(zombie, e.getLocation());
+			final CustomZombie zombie = new CustomZombie(((CraftWorld) ((World) e.getLocation().getWorld())).getHandle());
 			
-			new BukkitRunnable() {
-				public void run() {
-					Bukkit.getLogger().info("updating zombie walk");
-					updateZombieTarget((Zombie) zombie, true);
-				}
-			}.runTaskLater(this, 100);
-		}
-	}
-	
-	public void updateZombieTarget(Zombie zombie, boolean ignoreCurrentTarget){
-		Player targetPlayer = getClosestPlayer(zombie);
-		if(targetPlayer != null){
-			if(!ignoreCurrentTarget){
-				if(zombie.getTarget() != null){
-					return;
-				}
-			}
-			zombie.setTarget(targetPlayer);
-		}else{
-			zombie.setTarget(targetPlayer);
+			zombies.add(zombie);
+			
+			CustomEntities.spawnEntity(zombie, e.getLocation());
 		}
 	}
 	

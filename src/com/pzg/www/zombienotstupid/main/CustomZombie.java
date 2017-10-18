@@ -1,6 +1,7 @@
 package com.pzg.www.zombienotstupid.main;
 
 import java.lang.reflect.Field;
+import java.util.HashSet;
 
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
@@ -30,16 +31,16 @@ public class CustomZombie extends EntityZombie {
 	public PathfinderGoalWalkToLoc pathfinderGoalWalkToLoc;
 	public PathfinderTargetPlayer pathfinderTargetPlayer;
 
-	public CustomZombie(World world, double speed){
+	public CustomZombie(World world){
 		super(world);
-//		this.speed = speed * (PluginMain.useCustomAI ? 1.22:1);
-//		
-//		HashSet<?> goalB =   (HashSet<?>)getPrivateField("b", PathfinderGoalSelector.class, goalSelector);   goalB.clear();
-//		HashSet<?> goalC =   (HashSet<?>)getPrivateField("c", PathfinderGoalSelector.class, goalSelector);   goalC.clear();
-//		HashSet<?> targetB = (HashSet<?>)getPrivateField("b", PathfinderGoalSelector.class, targetSelector); targetB.clear();
-//		HashSet<?> targetC = (HashSet<?>)getPrivateField("c", PathfinderGoalSelector.class, targetSelector); targetC.clear();
-//		
-//		r();
+		this.speed = speed * (PluginMain.useCustomAI ? 1.22:1);
+		
+		HashSet<?> goalB =   (HashSet<?>)getPrivateField("b", PathfinderGoalSelector.class, goalSelector);   goalB.clear();
+		HashSet<?> goalC =   (HashSet<?>)getPrivateField("c", PathfinderGoalSelector.class, goalSelector);   goalC.clear();
+		HashSet<?> targetB = (HashSet<?>)getPrivateField("b", PathfinderGoalSelector.class, targetSelector); targetB.clear();
+		HashSet<?> targetC = (HashSet<?>)getPrivateField("c", PathfinderGoalSelector.class, targetSelector); targetC.clear();
+		
+		r();
 	}
 
 	@Override
