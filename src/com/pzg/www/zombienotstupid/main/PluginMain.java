@@ -1,14 +1,9 @@
 package com.pzg.www.zombienotstupid.main;
 
-import java.lang.reflect.Field;
-import java.util.UUID;
-
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftLivingEntity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -22,13 +17,9 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import net.minecraft.server.v1_12_R1.AttributeInstance;
-import net.minecraft.server.v1_12_R1.AttributeModifier;
 import net.minecraft.server.v1_12_R1.Entity;
-import net.minecraft.server.v1_12_R1.EntityInsentient;
 import net.minecraft.server.v1_12_R1.EntityTypes;
 import net.minecraft.server.v1_12_R1.EntityZombie;
-import net.minecraft.server.v1_12_R1.GenericAttributes;
 import net.minecraft.server.v1_12_R1.MinecraftKey;
 
 public class PluginMain extends JavaPlugin implements Listener {
@@ -57,31 +48,8 @@ public class PluginMain extends JavaPlugin implements Listener {
 			Bukkit.getLogger().info("Replacing vanilla zombie with special zombie.");
 			e.getEntity().remove();
 			
-			final CustomZombie zombie = new CustomZombie(e.getLocation().getWorld(), 1.2);
+			final CustomZombie zombie = new CustomZombie(((CraftWorld) ((World) e.getLocation().getWorld())).getHandle(), 1.2);
 			CustomEntities.spawnEntity(zombie, e.getLocation());
-			
-//			World world = e.getLocation().getWorld();
-//
-//			final CustomZombie zombie = new CustomZombie(world, 1.2);
-//			CustomEntities.spawnEntity(zombie, e.getLocation());
-//
-//			final Zombie bukkitZombie = (Zombie) zombie.getBukkitEntity();
-//			if (bukkitZombie != null) {
-//				bukkitZombie.setCustomName(ChatColor.RED + "Custom Zombie");
-//				bukkitZombie.setCustomNameVisible(true);
-//			}
-//
-//			final Zombie normalZombie = (Zombie) world.spawnEntity(e.getLocation(), EntityType.ZOMBIE);
-//
-//			normalZombie.setCustomName(ChatColor.GRAY + "Zombie");
-//			normalZombie.setCustomNameVisible(true);
-//			normalZombie.setRemoveWhenFarAway(false);
-//
-//			EntityInsentient nmsEntity = (EntityInsentient) ((CraftLivingEntity) normalZombie).getHandle();
-//			AttributeInstance followRangeAttribute = nmsEntity.getAttributeInstance(GenericAttributes.FOLLOW_RANGE);
-//			AttributeModifier modifier = new AttributeModifier(followRangeUID, "Nazi Zombies Follow Range Modifier", 100, 0);
-//			followRangeAttribute.b(modifier);
-//			followRangeAttribute.a(modifier);
 			
 			new BukkitRunnable() {
 				public void run() {
@@ -120,10 +88,6 @@ public class PluginMain extends JavaPlugin implements Listener {
 		}
 		return targetPlayer;
 	}
-	
-	Location loc1, loc2;
-	
-//	private static final UUID followRangeUID = UUID.fromString("1737400d-3c18-41ba-8314-49a158481e1e");
 	
 	public enum CustomEntities {
 		CUSTOM_ZOMBIE("Zombie", 54, EntityType.ZOMBIE, EntityZombie.class, CustomZombie.class);
@@ -179,24 +143,5 @@ public class PluginMain extends JavaPlugin implements Listener {
 	    public Class<?> getCustomClass() {
 	        return customClass;
 	    }
-	}
-
-	public static Object getPrivateField(String fieldName, Class<? extends net.minecraft.server.v1_12_R1.EntityTypes> clazz, Object object) {
-		Field field;
-		Object o = null;
-
-		try {
-			field = clazz.getDeclaredField(fieldName);
-
-			field.setAccessible(true);
-
-			o = field.get(object);
-		} catch (NoSuchFieldException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
-
-		return o;
 	}
 }
